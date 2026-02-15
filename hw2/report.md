@@ -85,3 +85,22 @@
 
 **Ограничения:**  
 Метод требует наличия калибровочного набора данных и долгой калибровки, размен качество-скорость 5-10%.
+
+
+**Как запустить:**
+```bash
+git clone 
+cd hw2/
+docker build -t yolo11-quant .
+docker run --gpus all -it --rm -v $(pwd):/workspace yolo11-quant
+```
+Внутри контейнера:
+```bash
+python onnx2trt8.py -m yolo11n.onnx -d datasets/coco/images/val2017/  -s 3,640,640 -o calib.bin -t int8
+```
+
+Измерить метрики
+```bash
+yolo detect val model=calib.engine data=coco.yaml split=val batch=1 
+yolo detect val model=yolo11n.pt data=coco.yaml split=val batch=1 
+```
